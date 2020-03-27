@@ -20,9 +20,8 @@ public class CameraController : MonoBehaviour {
 		followAhead = 3f;
 		smoothing = 2f;
 		followTarget = true;
-		target = transform.root.gameObject;
 		transform.gameObject.name = target.name + " " + transform.gameObject.name;
-		gameObject.transform.parent = null;
+		transform.SetParent (null);
 	}
 
 	// Update is called once per frame
@@ -43,5 +42,10 @@ public class CameraController : MonoBehaviour {
 			}
 		}
 
+	}
+
+	public void setTarget(GameObject targ) {
+		target = targ;
+		followTarget = true;
 	}
 }
