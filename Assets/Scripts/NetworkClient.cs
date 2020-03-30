@@ -11,11 +11,15 @@ public class NetworkClient : SocketIOComponent {
 	private Transform objectContainer;
 
 	private Dictionary<string, GameObject> serverPlayers;
-	private Dictionary<string, GameObject> serverCameras;
+
+	public static string ClientID { get; private set; }
+
+	private int numPlayers;
 
 	// Use this for initialization
 	public override void Start () {
 		base.Start ();
+		numPlayers = 0;
 		initialize ();
 		setupEvents ();
 	}
@@ -31,52 +35,159 @@ public class NetworkClient : SocketIOComponent {
 		});
 			
 		On("register", (E) => {
-			string id = E.data["id"].ToString();
+			ClientID = E.data["id"].ToString();
+			// Spawn existing players...
+//			spawnExistingPlayers(E.data);
+
 		});
 
 		On ("spawn", (E) => {
-			spawnPlayer(E);
+			spawnPlayers(E);
 		});
 
+		On("spawnOtherPlayer", (E) => {
+			Debug.Log(E.data);
+		});
+			
 		On ("disconnected", (E) => {
 			disconnectPlayer(E);
 		});
+
+		On ("updatePosition", (E) => {
+			string id = E.data ["id"].ToString ();
+			float x = E.data ["position"] ["x"].f;
+			float y = E.data ["position"] ["y"].f;
+
+			serverPlayers [id].transform.position = new Vector3 (x, y, 7.5f);
+		});
+
+		On ("updateDirection", (E) => {
+			string id = E.data ["id"].ToString ();
+			int dir = int.Parse(E.data["direction"].ToString());
+			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
+			playCtrl.direction = dir;
+			playCtrl.handleCharacterDirection();
+
+		});
+
+		On ("updateAnimation", (E) => {
+			string id = E.data ["id"].ToString ();
+			Animator anim = serverPlayers[id].GetComponent<Animator>();
+
+			bool inCombat = E.data["inCombat"].ToString() == "true";
+			bool moving = E.data["moving"].ToString() == "true";
+			bool running = E.data["running"].ToString() == "true";
+			bool attacking = E.data["attacking"].ToString() == "true";
+
+			anim.SetBool("inCombat", inCombat);
+			anim.SetBool("moving", moving);
+			anim.SetBool("running", running);
+
+			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
+			playCtrl.moving = moving;
+			playCtrl.running = running;
+			playCtrl.inCombat = inCombat;
+			playCtrl.attacking = attacking;
+//
+			playCtrl.handleAnimations();
+		});
+
+
 	}
 
 	private void initialize() {
 		serverPlayers = new Dictionary<string, GameObject>();
-		serverCameras = new Dictionary<string, GameObject> ();
 		objectContainer = GameObject.Find ("ObjectContainer").transform;
 	}
 
 
-	private void spawnPlayer(SocketIOEvent E) {
+	private void spawnPlayers(SocketIOEvent E) {
+		Debug.Log (E.data);
+		Debug.Log (ClientID);
 		// Spawn the Player
-		string id = E.data ["player"]["id"].ToString ();
 
-		GameObject newCam = Instantiate(cameraPrefab, new Vector3(0, 0, -2), Quaternion.identity) as GameObject;
-		newCam.name = "camera_" + id;
-		GameObject newPlayer = Instantiate(playerPrefab, new Vector3(0, 0, -1), Quaternion.identity) as GameObject;
+		string id = E.data ["player"]["id"].ToString ();
+		Debug.Log (E.data ["player"] ["position"] ["x"].ToString ());
+		Vector3 playerLocation = new Vector3 (
+			float.Parse(E.data ["player"] ["position"] ["x"].ToString()), 
+			float.Parse(E.data ["player"] ["position"] ["y"].ToString()),
+			7.5f
+		);
+
+		Debug.Log (playerLocation);
+			
+		GameObject newPlayer = Instantiate(playerPrefab, playerLocation, Quaternion.identity) as GameObject;
 		newPlayer.name = "player_" + id;
 
-
 		PlayerController controller = (PlayerController) newPlayer.GetComponent(typeof(PlayerController));
-		controller.setCam(newCam);
 
-		CameraController camController = (CameraController) newCam.GetComponent(typeof(CameraController));
-		camController.setTarget(newPlayer);
+		if (ClientID == id) {
+			Debug.Log ("reached");
+			GameObject newCam = Instantiate (cameraPrefab, new Vector3 (0, 0, -1), Quaternion.identity) as GameObject;
+			newCam.name = "camera_" + id;
 
+			controller.setCam(newCam);
+
+			CameraController camController = (CameraController) newCam.GetComponent(typeof(CameraController));
+			camController.setTarget(newPlayer);
+		}
+			
 		newPlayer.transform.SetParent(objectContainer);
 		serverPlayers.Add(id, newPlayer);
-		serverCameras.Add(id, newCam);
+		NetworkIdentity ni = newPlayer.GetComponent<NetworkIdentity> ();
+		ni.SetControllerID (id);
+		ni.SetSocketReference (this);
 	}
 
+	private void spawnExistingPlayers(SocketIOEvent E) {
+		string id = E.data ["player"]["id"].ToString ();
+
+//		foreach(KeyValuePair<string, string> entry in myDictionary)
+//		{
+//			// do something with entry.Value or entry.Key
+//		}
+
+
+	}
 
 	private void disconnectPlayer(SocketIOEvent E) {
 		string id = E.data ["id"].ToString ();
 		GameObject go = serverPlayers[id];
 		Destroy(go);
 		serverPlayers.Remove(id);
-		serverCameras.Remove(id);
+	}
+
+	public string getClientID() {
+		return ClientID;
 	}
 }
+
+[System.Serializable]
+public class Player {
+	public string id;
+	public Position position;
+	public Scale scale;
+	public int direction;
+	public AnimationState animation;
+}
+
+[System.Serializable]
+public class Position {
+	public float x;
+	public float y;
+}
+
+[System.Serializable]
+public class Scale {
+	public float x;
+	public float y;
+}
+
+[System.Serializable]
+public class AnimationState {
+	public bool moving;
+	public bool running;
+	public bool inCombat;
+	public bool attacking;
+}
+

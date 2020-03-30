@@ -14,41 +14,50 @@ public class PlayerController : MonoBehaviour {
 	public float walking_speed = 0.15f;
 	private float curr_speed;
 
-	private int direction;
-	private bool moving;
-	private bool running;
-	private bool attacking;
-	private bool inCombat;
+	public int direction;
+	private int oldDirection;
+	public bool moving;
+	public bool running;
+	public bool attacking = false;
+	public bool inCombat;
+
+	private NetworkIdentity networkIdentity;
 
 	// Use this for initialization
 	void Start () {
 		direction = 1;
+		oldDirection = direction;
 		moving = false;
+		networkIdentity = GetComponent<NetworkIdentity> ();
 	}
 
 	// Update is called once per frame. This is the "main" function.
 	void Update () {
 
-		// Gathers the user inputs and assigns the appropriate state variables.
-		int newDirection = handleInputs ();
+		if (networkIdentity.IsControlling ()) {
+			// Gathers the user inputs and assigns the appropriate state variables.
+			handleInputs ();
+		}
 
 		// Handles the player's inCombat status (timer that counts down)
-		handleCombatTimer();
+		handleCombatTimer ();
 
 		// Handles which animations play as well as animation parameters.
 		handleAnimations ();
 
 		// Handle which direction the character is facing.
-		handleCharacterDirection (newDirection);
-
-		// Handle player movement.
-		handleMovement ();
-
+		handleCharacterDirection ();
+		
+		if (networkIdentity.IsControlling ()) {
+			// Handle player movement.
+			handleMovement ();
+		}
 	}
 
-	int handleInputs() {
+	void handleInputs() {
 		
 		int newDirection = direction;
+		oldDirection = direction;
 		if (Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.LeftArrow)) {
 			newDirection = -1;
 			moving = true;
@@ -79,7 +88,7 @@ public class PlayerController : MonoBehaviour {
 			attacking = false;
 		}
 
-		return newDirection;
+		direction = newDirection;
 	}
 
 	void handleCombatTimer() {
@@ -118,10 +127,10 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	void handleCharacterDirection(int newDirection) {
-		if (direction != newDirection) {
+	public void handleCharacterDirection() {
+		if (direction != oldDirection) {
 			flipCharacter ();
-			direction = newDirection;
+			oldDirection = direction;
 		}
 	}
 
@@ -133,7 +142,7 @@ public class PlayerController : MonoBehaviour {
 		);
 	}
 
-	void handleAnimations() {
+	public void handleAnimations() {
 
 		if (attacking) {
 			animator.Play ("side_slash_01");
