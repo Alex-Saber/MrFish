@@ -44,10 +44,6 @@ public class NetworkClient : SocketIOComponent {
 		On ("spawn", (E) => {
 			spawnPlayers(E);
 		});
-
-		On("spawnOtherPlayer", (E) => {
-			Debug.Log(E.data);
-		});
 			
 		On ("disconnected", (E) => {
 			disconnectPlayer(E);
@@ -58,7 +54,10 @@ public class NetworkClient : SocketIOComponent {
 			float x = E.data ["position"] ["x"].f;
 			float y = E.data ["position"] ["y"].f;
 
-			serverPlayers [id].transform.position = new Vector3 (x, y, 7.5f);
+			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
+//			playCtrl.handleMovement();
+//			playCtrl.moveToward(new Vector3(x, y, playCtrl.transform.position.z));
+//			serverPlayers [id].transform.position = new Vector3 (x, y, 7.5f);
 		});
 
 		On ("updateDirection", (E) => {
@@ -66,12 +65,13 @@ public class NetworkClient : SocketIOComponent {
 			int dir = int.Parse(E.data["direction"].ToString());
 			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
 			playCtrl.direction = dir;
-			playCtrl.handleCharacterDirection();
 
 		});
 
 		On ("updateAnimation", (E) => {
 			string id = E.data ["id"].ToString ();
+
+			Debug.Log(id);
 			Animator anim = serverPlayers[id].GetComponent<Animator>();
 
 			bool inCombat = E.data["inCombat"].ToString() == "true";
@@ -99,22 +99,17 @@ public class NetworkClient : SocketIOComponent {
 		serverPlayers = new Dictionary<string, GameObject>();
 		objectContainer = GameObject.Find ("ObjectContainer").transform;
 	}
-
-
+		
 	private void spawnPlayers(SocketIOEvent E) {
-		Debug.Log (E.data);
-		Debug.Log (ClientID);
 		// Spawn the Player
 
 		string id = E.data ["player"]["id"].ToString ();
-		Debug.Log (E.data ["player"] ["position"] ["x"].ToString ());
 		Vector3 playerLocation = new Vector3 (
 			float.Parse(E.data ["player"] ["position"] ["x"].ToString()), 
 			float.Parse(E.data ["player"] ["position"] ["y"].ToString()),
 			7.5f
 		);
 
-		Debug.Log (playerLocation);
 			
 		GameObject newPlayer = Instantiate(playerPrefab, playerLocation, Quaternion.identity) as GameObject;
 		newPlayer.name = "player_" + id;
@@ -122,7 +117,6 @@ public class NetworkClient : SocketIOComponent {
 		PlayerController controller = (PlayerController) newPlayer.GetComponent(typeof(PlayerController));
 
 		if (ClientID == id) {
-			Debug.Log ("reached");
 			GameObject newCam = Instantiate (cameraPrefab, new Vector3 (0, 0, -1), Quaternion.identity) as GameObject;
 			newCam.name = "camera_" + id;
 

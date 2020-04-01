@@ -79,8 +79,8 @@ public class NetworkTransform : MonoBehaviour {
 	}
 
 	private void sendPositionData() {
-		player.position.x = Mathf.Round (transform.position.x * 1000.0f) / 1000.0f;
-		player.position.y = Mathf.Round (transform.position.y * 1000.0f) / 1000.0f;
+		player.position.x = transform.position.x;
+		player.position.y = transform.position.y;
 
 		networkIdentity.GetSocket().Emit("updatePosition", 
 			new JSONObject(JsonUtility.ToJson(player))

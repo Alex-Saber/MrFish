@@ -83,6 +83,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2b460f2b058469b9c1733debe1d77a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAnim: {fileID: 0}
+  playerCtrl: {fileID: 0}
 --- !u!114 &114627929062170646
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -96,8 +98,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 95590934644252790}
   cam: {fileID: 0}
-  running_speed: 0.35
-  walking_speed: 0.15
+  running_speed: 0.2
+  walking_speed: 0.1
+  vertical_walking_speed: 0.19
+  vertical_running_speed: 0.09
+  direction: 0
+  moving: 0
+  running: 0
+  attacking: 0
+  inCombat: 0
 --- !u!212 &212137645780406538
 SpriteRenderer:
   m_ObjectHideFlags: 1

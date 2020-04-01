@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour {
 	public float speed;
 	// Use this for initialization
 	void Start () {
-		speed = 0.1f;
+		speed = 0.05f;
 		followAhead = 3f;
 		smoothing = 2f;
 		followTarget = true;
@@ -30,13 +30,22 @@ public class CameraController : MonoBehaviour {
 			targetPosition = new Vector3 (target.transform.position.x, target.transform.position.y, -10f);
 
 
-			float distance_scale = Mathf.Abs (transform.position.x - targetPosition.x);
+			float distance_scale_x = Mathf.Abs (transform.position.x - targetPosition.x);
+			float distance_scale_y = Mathf.Abs (transform.position.y - targetPosition.y);
 
 			//transform.position = targetPosition;
 			if (Mathf.Abs(transform.position.x - targetPosition.x) > 1) {
 				transform.position = new Vector3 (
-					transform.position.x + speed * distance_scale * (Mathf.Sign (targetPosition.x - transform.position.x)), 
+					transform.position.x + speed * distance_scale_x * (Mathf.Sign (targetPosition.x - transform.position.x)), 
 					transform.position.y,
+					transform.position.z
+				);
+			}
+
+			if (Mathf.Abs(transform.position.y - targetPosition.y) > 1) {
+				transform.position = new Vector3 (
+					transform.position.x, 
+					transform.position.y + speed * distance_scale_y * (Mathf.Sign (targetPosition.y - transform.position.y)),
 					transform.position.z
 				);
 			}

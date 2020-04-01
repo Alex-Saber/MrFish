@@ -10,8 +10,10 @@ public class PlayerController : MonoBehaviour {
 	private int combatTime = 200;
 	private int inCombatTimer = 0;
 
-	public float running_speed = 0.35f;
-	public float walking_speed = 0.15f;
+	public float running_speed = 0.2f;
+	public float walking_speed = 0.1f;
+	public float vertical_walking_speed = 0.19f;
+	public float vertical_running_speed = 0.09f;
 	private float curr_speed;
 
 	public int direction;
@@ -25,7 +27,7 @@ public class PlayerController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		direction = 1;
+		direction = 0;
 		oldDirection = direction;
 		moving = false;
 		networkIdentity = GetComponent<NetworkIdentity> ();
@@ -45,28 +47,31 @@ public class PlayerController : MonoBehaviour {
 		// Handles which animations play as well as animation parameters.
 		handleAnimations ();
 
-		// Handle which direction the character is facing.
-		handleCharacterDirection ();
-		
-		if (networkIdentity.IsControlling ()) {
-			// Handle player movement.
-			handleMovement ();
-		}
+		handleMovement ();
 	}
 
 	void handleInputs() {
-		
 		int newDirection = direction;
 		oldDirection = direction;
-		if (Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.LeftArrow)) {
-			newDirection = -1;
-			moving = true;
-		} else if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.RightArrow)) {
-			newDirection = 1;
-			moving = true;
-		} else {
-			moving = false;
+
+		if (!isAttacking ()) {
+			if (Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.LeftArrow)) {
+				newDirection = 1;
+				moving = true;
+			} else if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.RightArrow)) {
+				newDirection = 0;
+				moving = true;
+			} else if (Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.UpArrow)) {
+				newDirection = 2;
+				moving = true;
+			} else if (Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.DownArrow)) {
+				newDirection = 3;
+				moving = true;
+			} else {
+				moving = false;
+			}
 		}
+
 
 		if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift)) {
 			running = true;
@@ -76,14 +81,14 @@ public class PlayerController : MonoBehaviour {
 
 		if (Input.GetMouseButton (0)) {
 			attacking = true;
+			moving = false;
 			// Find location of mouse to determine which direction to attack in.
 			Vector3 mouseLoc = cam.ScreenToWorldPoint(Input.mousePosition);
 			if (mouseLoc.x >= transform.position.x) {
-				newDirection = 1;
+				newDirection = 0;
 			} else {
-				newDirection = -1;
+				newDirection = 1;
 			}
-
 		} else {
 			attacking = false;
 		}
@@ -105,62 +110,121 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	void handleMovement() {
+	public void handleMovement() {
 		curr_speed = 0.0f;
 		if (moving) {
 			// If moving and running set speed to running_speed
 			if (moving && running) {
-				curr_speed = running_speed;
+				if (direction == 2 || direction == 3) {
+					curr_speed = vertical_running_speed;
+				} else {
+					curr_speed = running_speed;
+				}
 			} 
 			// If moving but not running set speed to walking speed
 			else if (moving && !running) {
-				curr_speed = walking_speed;
+				if (direction == 2 || direction == 3) {
+					curr_speed = vertical_walking_speed;
+				} else {
+					curr_speed = walking_speed;
+				}
 			}
 		}
-			
+
+		// Check which direction the character is facing before moving...
+
 		if (!isAttacking()) {
-			transform.position = new Vector3 (
-				transform.position.x + curr_speed * direction, 
-				transform.position.y,
-				transform.position.z
-			);
-		}
-	}
 
-	public void handleCharacterDirection() {
-		if (direction != oldDirection) {
-			flipCharacter ();
-			oldDirection = direction;
-		}
-	}
+			Vector3 newPosition = new Vector3 (0f, 0f, transform.position.z);
 
-	void flipCharacter() {
-		transform.localScale = new Vector3 (
-			transform.localScale.x * -1,
-			transform.localScale.y,
-			transform.localScale.z
-		);
+			float new_x = transform.position.x;
+			float new_y = transform.position.y;
+			switch (direction) {
+			case 0:
+				new_x += curr_speed;
+				break;
+			case 1:
+				new_x -= curr_speed;
+				break;
+			case 2:
+				new_y += curr_speed;
+				break;
+			case 3:
+				new_y -= curr_speed;
+				break;
+			}
+
+			newPosition.x = new_x;
+			newPosition.y = new_y;
+			transform.position = newPosition;
+		}
 	}
 
 	public void handleAnimations() {
-
-		if (attacking) {
-			animator.Play ("side_slash_01");
-		}
-			
+		animator.SetInteger ("direction", direction);
 		animator.SetBool ("moving", moving);
 		animator.SetBool ("running", running);
 		animator.SetBool ("inCombat", inCombat);
+
+		if (attacking) {
+			switch (direction) {
+			case 0:
+				animator.Play ("right_slash_01");
+				break;
+			case 1:
+				animator.Play ("left_slash_01");				
+				break;
+			case 2:
+				animator.Play ("right_slash_01");				
+				break;
+			case 3:
+				animator.Play ("right_slash_01");				
+				break;
+			}
+		} 
+			
+		if (!isAttacking ()) {
+			if (moving) {
+				string animState = "walk";
+				if (running)
+					animState = "run";
+				switch (direction) {
+				case 0:
+					animator.Play (animState + "_right");
+					break;
+				case 1:
+					animator.Play (animState + "_left");
+					break;
+				case 2:
+					animator.Play (animState + "_up");
+					break;
+				case 3:
+					animator.Play (animState + "_down");
+					break;
+				}
+			}
+		}
 	}
 
 
 	bool isAttacking() {
-		return animator.GetCurrentAnimatorStateInfo (0).IsName ("side_slash_01") || animator.GetCurrentAnimatorStateInfo (0).IsName ("side_slash_02");
+		List<string> attackStates = new List<string>() {   
+			"right_slash_01",
+			"right_slash_02",
+			"left_slash_01",
+			"left_slash_02"
+		};
+
+		foreach (string state in attackStates) {
+			if (animator.GetCurrentAnimatorStateInfo (0).IsName (state)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setCam(GameObject camera) {
 		cam = (Camera) camera.GetComponent(typeof(Camera));
 	}
-
 }
 
