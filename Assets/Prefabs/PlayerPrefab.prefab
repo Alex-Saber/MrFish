@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 95590934644252790}
   - component: {fileID: 114257009470284692}
   - component: {fileID: 114595891806194438}
+  - component: {fileID: 61172186341427246}
   m_Layer: 0
   m_Name: PlayerPrefab
   m_TagString: Untagged
@@ -44,6 +45,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &61172186341427246
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1121883733414890}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.015, y: -0.12}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.32, y: 0.32}
+    newSize: {x: 0.32, y: 0.32}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.08, y: 0.09}
+  m_EdgeRadius: 0
 --- !u!95 &95590934644252790
 Animator:
   serializedVersion: 3
@@ -78,13 +104,13 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1121883733414890}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a2b460f2b058469b9c1733debe1d77a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerAnim: {fileID: 0}
-  playerCtrl: {fileID: 0}
+  playerAnim: {fileID: 95590934644252790}
+  playerCtrl: {fileID: 114627929062170646}
 --- !u!114 &114627929062170646
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -100,8 +126,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   running_speed: 0.2
   walking_speed: 0.1
-  vertical_walking_speed: 0.19
-  vertical_running_speed: 0.09
+  vertical_running_speed: 0.18
+  vertical_walking_speed: 0.08
   direction: 0
   moving: 0
   running: 0
@@ -141,7 +167,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ecd6b824117f647b385954418846dde9, type: 3}
+  m_Sprite: {fileID: 21300026, guid: 26996b5307085460cb9e28c5d15530b9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

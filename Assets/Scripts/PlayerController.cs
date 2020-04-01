@@ -11,9 +11,10 @@ public class PlayerController : MonoBehaviour {
 	private int inCombatTimer = 0;
 
 	public float running_speed = 0.2f;
-	public float walking_speed = 0.1f;
-	public float vertical_walking_speed = 0.19f;
-	public float vertical_running_speed = 0.09f;
+	public float walking_speed = 0.11f;
+	public float vertical_running_speed = 0.18f;
+	public float vertical_walking_speed = 0.09f;
+
 	private float curr_speed;
 
 	public int direction;
@@ -55,19 +56,23 @@ public class PlayerController : MonoBehaviour {
 		oldDirection = direction;
 
 		if (!isAttacking ()) {
-			if (Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.LeftArrow)) {
-				newDirection = 1;
-				moving = true;
-			} else if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.RightArrow)) {
+			if (Right()) {
 				newDirection = 0;
 				moving = true;
-			} else if (Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.UpArrow)) {
+			} 
+			else if (Left()) {
+				newDirection = 1;
+				moving = true;
+			} 
+			else if (Up()) {
 				newDirection = 2;
 				moving = true;
-			} else if (Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.DownArrow)) {
+			} 
+			else if (Down()) {
 				newDirection = 3;
 				moving = true;
-			} else {
+			} 
+			else {
 				moving = false;
 			}
 		}
@@ -111,23 +116,27 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void handleMovement() {
-		curr_speed = 0.0f;
+		float horizontal_speed = 0.0f;
+		float vertical_speed = 0.0f;
+
+		int runMultiplier = 1;
+		if (running) {
+			runMultiplier = 2;
+		} 
+
 		if (moving) {
-			// If moving and running set speed to running_speed
-			if (moving && running) {
-				if (direction == 2 || direction == 3) {
-					curr_speed = vertical_running_speed;
-				} else {
-					curr_speed = running_speed;
-				}
+			// If moving and running multiply speed by 2
+			if (Up()) {
+				vertical_speed += vertical_walking_speed * runMultiplier;
 			} 
-			// If moving but not running set speed to walking speed
-			else if (moving && !running) {
-				if (direction == 2 || direction == 3) {
-					curr_speed = vertical_walking_speed;
-				} else {
-					curr_speed = walking_speed;
-				}
+			if (Down()) {
+				vertical_speed -= vertical_walking_speed * runMultiplier;
+			}
+			if (Right ()) {
+				horizontal_speed += walking_speed * runMultiplier;
+			}
+			if (Left ()) {
+				horizontal_speed -= walking_speed * runMultiplier;
 			}
 		}
 
@@ -135,27 +144,11 @@ public class PlayerController : MonoBehaviour {
 
 		if (!isAttacking()) {
 
-			Vector3 newPosition = new Vector3 (0f, 0f, transform.position.z);
-
-			float new_x = transform.position.x;
-			float new_y = transform.position.y;
-			switch (direction) {
-			case 0:
-				new_x += curr_speed;
-				break;
-			case 1:
-				new_x -= curr_speed;
-				break;
-			case 2:
-				new_y += curr_speed;
-				break;
-			case 3:
-				new_y -= curr_speed;
-				break;
-			}
-
-			newPosition.x = new_x;
-			newPosition.y = new_y;
+			Vector3 newPosition = new Vector3 (
+				transform.position.x + horizontal_speed, 
+				transform.position.y + vertical_speed, 
+				transform.position.z
+			);
 			transform.position = newPosition;
 		}
 	}
@@ -225,6 +218,22 @@ public class PlayerController : MonoBehaviour {
 
 	public void setCam(GameObject camera) {
 		cam = (Camera) camera.GetComponent(typeof(Camera));
+	}
+
+	private bool Right() {
+		return Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.RightArrow);
+	}
+
+	private bool Left() {
+		return Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.LeftArrow);
+	}
+
+	private bool Up() {
+		return Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.UpArrow);
+	}
+
+	private bool Down() {
+		return Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.DownArrow);
 	}
 }
 
