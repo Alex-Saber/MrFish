@@ -20,6 +20,7 @@ public class NetworkTransform : MonoBehaviour {
 	private bool moving;
 	private bool inCombat;
 	private bool attacking;
+	private int direction;
 
 	// Use this for initialization
 	void Start () {
@@ -44,6 +45,7 @@ public class NetworkTransform : MonoBehaviour {
 		moving = playerCtrl.moving;
 		running = playerCtrl.running;
 		attacking = playerCtrl.attacking;
+		direction = playerCtrl.direction;
 
 		if (!networkIdentity.IsControlling ()) {
 			enabled = false;
@@ -51,27 +53,29 @@ public class NetworkTransform : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		if (networkIdentity.IsControlling ()) {
 			if (oldPosition != transform.position) {
 				oldPosition = transform.position;
 				sendPositionData ();
 			}
 
-			if (oldDirection != playerCtrl.direction) {
-				oldDirection = playerCtrl.direction;
-				sendDirectionData();
-			}
+//			if (oldDirection != playerCtrl.direction) {
+//				oldDirection = playerCtrl.direction;
+//				sendDirectionData();
+//			}
 				
 			if (moving != playerCtrl.moving ||
 				running != playerCtrl.running ||
 				inCombat != playerCtrl.inCombat ||
-				attacking != playerCtrl.attacking) {
+				attacking != playerCtrl.attacking ||
+				direction != playerCtrl.direction) {
 
 				moving = playerCtrl.moving;
 				running = playerCtrl.running;
 				inCombat = playerCtrl.inCombat;
 				attacking = playerCtrl.attacking;
+				direction = playerCtrl.direction;
 
 				sendAnimationData ();
 			}
@@ -85,7 +89,6 @@ public class NetworkTransform : MonoBehaviour {
 		networkIdentity.GetSocket().Emit("updatePosition", 
 			new JSONObject(JsonUtility.ToJson(player))
 		);
-
 	}
 
 	private void sendDirectionData() {
@@ -101,6 +104,7 @@ public class NetworkTransform : MonoBehaviour {
 		player.animation.moving = playerCtrl.moving;
 		player.animation.running = playerCtrl.running;
 		player.animation.attacking = playerCtrl.attacking;
+		player.direction = playerCtrl.direction;
 
 		networkIdentity.GetSocket().Emit("updateAnimation", 
 			new JSONObject(JsonUtility.ToJson(player))

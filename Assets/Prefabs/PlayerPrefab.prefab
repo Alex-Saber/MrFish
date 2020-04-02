@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114257009470284692}
   - component: {fileID: 114595891806194438}
   - component: {fileID: 61172186341427246}
-  - component: {fileID: 50788547131953068}
+  - component: {fileID: 50083447328603094}
   m_Layer: 0
   m_Name: PlayerPrefab
   m_TagString: Untagged
@@ -46,7 +46,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &50788547131953068
+--- !u!50 &50083447328603094
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 1
@@ -57,7 +57,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.0001
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1121883733414890}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a2b460f2b058469b9c1733debe1d77a, type: 3}
   m_Name: 
@@ -188,7 +188,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300026, guid: 26996b5307085460cb9e28c5d15530b9, type: 3}
+  m_Sprite: {fileID: 21300032, guid: 26996b5307085460cb9e28c5d15530b9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

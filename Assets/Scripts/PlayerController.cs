@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		direction = 0;
-		oldDirection = direction;
+//		oldDirection = direction;
 		moving = false;
 		networkIdentity = GetComponent<NetworkIdentity> ();
 	}
@@ -76,8 +76,7 @@ public class PlayerController : MonoBehaviour {
 				moving = false;
 			}
 		}
-
-
+			
 		if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift)) {
 			running = true;
 		} else {

@@ -51,13 +51,13 @@ public class NetworkClient : SocketIOComponent {
 
 		On ("updatePosition", (E) => {
 			string id = E.data ["id"].ToString ();
-			float x = E.data ["position"] ["x"].f;
-			float y = E.data ["position"] ["y"].f;
+			float x = float.Parse(E.data ["position"] ["x"].ToString());
+			float y = float.Parse(E.data ["position"] ["y"].ToString());
 
-			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
+//			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
 //			playCtrl.handleMovement();
 //			playCtrl.moveToward(new Vector3(x, y, playCtrl.transform.position.z));
-//			serverPlayers [id].transform.position = new Vector3 (x, y, 7.5f);
+			serverPlayers [id].transform.position = new Vector3 (x, y, serverPlayers [id].transform.position.z);
 		});
 
 		On ("updateDirection", (E) => {
@@ -65,30 +65,32 @@ public class NetworkClient : SocketIOComponent {
 			int dir = int.Parse(E.data["direction"].ToString());
 			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
 			playCtrl.direction = dir;
-
 		});
 
 		On ("updateAnimation", (E) => {
+			Debug.Log("reached");
 			string id = E.data ["id"].ToString ();
 
-			Debug.Log(id);
 			Animator anim = serverPlayers[id].GetComponent<Animator>();
 
 			bool inCombat = E.data["inCombat"].ToString() == "true";
 			bool moving = E.data["moving"].ToString() == "true";
 			bool running = E.data["running"].ToString() == "true";
 			bool attacking = E.data["attacking"].ToString() == "true";
+			int direction = int.Parse(E.data["direction"].ToString());
 
 			anim.SetBool("inCombat", inCombat);
 			anim.SetBool("moving", moving);
 			anim.SetBool("running", running);
+			anim.SetInteger("direction", direction);
 
 			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
 			playCtrl.moving = moving;
 			playCtrl.running = running;
 			playCtrl.inCombat = inCombat;
 			playCtrl.attacking = attacking;
-//
+			playCtrl.direction = direction;
+
 			playCtrl.handleAnimations();
 		});
 
@@ -115,6 +117,7 @@ public class NetworkClient : SocketIOComponent {
 		newPlayer.name = "player_" + id;
 
 		PlayerController controller = (PlayerController) newPlayer.GetComponent(typeof(PlayerController));
+		controller.direction = 0;
 
 		if (ClientID == id) {
 			GameObject newCam = Instantiate (cameraPrefab, new Vector3 (0, 0, -1), Quaternion.identity) as GameObject;
@@ -131,17 +134,6 @@ public class NetworkClient : SocketIOComponent {
 		NetworkIdentity ni = newPlayer.GetComponent<NetworkIdentity> ();
 		ni.SetControllerID (id);
 		ni.SetSocketReference (this);
-	}
-
-	private void spawnExistingPlayers(SocketIOEvent E) {
-		string id = E.data ["player"]["id"].ToString ();
-
-//		foreach(KeyValuePair<string, string> entry in myDictionary)
-//		{
-//			// do something with entry.Value or entry.Key
-//		}
-
-
 	}
 
 	private void disconnectPlayer(SocketIOEvent E) {

@@ -1,6 +1,6 @@
-OSXStandalone
+WindowsStandalone
 PlayerPath?
-/Users/alex/Desktop/MrFish_osx.app
+/Users/alex/Desktop/MrFish_windows.exe
 SceneListBegin?
 Assets/Intro.unity
 SceneListEnd?
