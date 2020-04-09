@@ -1,11 +1,10 @@
 ﻿<Properties StartupConfiguration="{936D37C0-D2B0-145E-EE81-C165AC54F688}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/VisionDetector.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Network/NetworkClient.cs">
     <Files>
-      <File FileName="Assets/Scripts/Leech/LeechController.cs" Line="121" Column="19" />
+      <File FileName="Assets/Scripts/Leech/LeechController.cs" Line="102" Column="5" />
       <File FileName="Assets/Scripts/Player/PlayerController.cs" Line="7" Column="9" />
       <File FileName="Assets/Scripts/Network/NetworkTransform.cs" Line="84" Column="1" />
-      <File FileName="Assets/Scripts/Network/NetworkClient.cs" Line="36" Column="4" />
-      <File FileName="Assets/VisionDetector.cs" Line="6" Column="1" />
+      <File FileName="Assets/Scripts/Network/NetworkClient.cs" Line="107" Column="4" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -14,12 +13,18 @@
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
                 <Node name="Leech" expanded="True" />
-                <Node name="Network" expanded="True" />
+                <Node name="Network" expanded="True">
+                  <Node name="NetworkClient.cs" selected="True" />
+                </Node>
                 <Node name="Player" expanded="True" />
               </Node>
-              <Node name="VisionDetector.cs" selected="True" />
             </Node>
           </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="MrFish" expanded="True" selected="True" />
         </State>
       </Pad>
     </Pads>

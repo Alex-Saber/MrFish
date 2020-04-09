@@ -16,7 +16,7 @@ public class LeechController : MonoBehaviour {
 	public int direction;
 	public bool moving;
 
-	private string currentState;
+	public string currentState;
 
 	private GameObject target;
 
@@ -39,6 +39,7 @@ public class LeechController : MonoBehaviour {
 	{
 		if (target == null)
 		{
+			currentState = "patrol";
 			// Decides which patrol state the Leech is in
 			if (stateChangeTimer <= 0)
 			{
@@ -55,6 +56,7 @@ public class LeechController : MonoBehaviour {
 		}
         else
         {
+			currentState = "follow";
 			// Follow the target somehow
 			handleFollowMovement();
         }
@@ -90,8 +92,10 @@ public class LeechController : MonoBehaviour {
 
     public void handleFollowMovement()
     {
-        if (Vector3.Distance(transform.position, target.transform.position) > followDistance)
+        if (Mathf.Abs(transform.position.x - target.transform.position.x) > followDistance ||
+			Mathf.Abs(transform.position.y - target.transform.position.y) > followDistance)
         {
+			moving = true;
 			// Figure out movement direction...
 			int vertical = 1;
 			int horizontal = 1;
@@ -137,6 +141,10 @@ public class LeechController : MonoBehaviour {
 					direction = 1;
 			}
 		}
+        else
+        {
+			moving = false;
+        }
     }
 
 	public void handlePatrolMovement()
