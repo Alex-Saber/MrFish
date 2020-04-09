@@ -36,9 +36,6 @@ public class NetworkClient : SocketIOComponent {
 			
 		On("register", (E) => {
 			ClientID = E.data["id"].ToString();
-			// Spawn existing players...
-//			spawnExistingPlayers(E.data);
-
 		});
 
 		On ("spawn", (E) => {
@@ -54,9 +51,6 @@ public class NetworkClient : SocketIOComponent {
 			float x = float.Parse(E.data ["position"] ["x"].ToString());
 			float y = float.Parse(E.data ["position"] ["y"].ToString());
 
-//			PlayerController playCtrl = serverPlayers[id].GetComponent<PlayerController>();
-//			playCtrl.handleMovement();
-//			playCtrl.moveToward(new Vector3(x, y, playCtrl.transform.position.z));
 			serverPlayers [id].transform.position = new Vector3 (x, y, serverPlayers [id].transform.position.z);
 		});
 
@@ -94,7 +88,6 @@ public class NetworkClient : SocketIOComponent {
 			playCtrl.handleAnimations();
 		});
 
-
 	}
 
 	private void initialize() {
@@ -111,7 +104,6 @@ public class NetworkClient : SocketIOComponent {
 			float.Parse(E.data ["player"] ["position"] ["y"].ToString()),
 			7.5f
 		);
-
 			
 		GameObject newPlayer = Instantiate(playerPrefab, playerLocation, Quaternion.identity) as GameObject;
 		newPlayer.name = "player_" + id;

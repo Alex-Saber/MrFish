@@ -51,12 +51,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\CameraController.cs" />
-     <Compile Include="Assets\Scripts\GameController.cs" />
-     <Compile Include="Assets\Scripts\NetworkClient.cs" />
-     <Compile Include="Assets\Scripts\NetworkIdentity.cs" />
-     <Compile Include="Assets\Scripts\NetworkTransform.cs" />
-     <Compile Include="Assets\Scripts\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Game\GameController.cs" />
+     <Compile Include="Assets\Scripts\Leech\LeechController.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkClient.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkIdentity.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkTransform.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
      <Compile Include="Assets\SocketIO\JSONObject\JSONObject.cs" />
      <Compile Include="Assets\SocketIO\JSONObject\JSONTemplates.cs" />
      <Compile Include="Assets\SocketIO\JSONObject\VectorTemplates.cs" />
