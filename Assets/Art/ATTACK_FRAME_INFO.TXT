@@ -1,0 +1,35 @@
+Attack Frame Info
+-----------------
+* frame numbering starts at [0]
+* unless stated otherwise, frame number for the incoming animation is [0]
+
+RIGHT----------------------------
+
+attack1_right:
+
+	* transitions from ??
+	* transitions to attack2_right or idlecomb_right
+
+	[5] -> attack2_right
+	[7] -> idlecomb_right
+
+attack2_right:
+
+	* transitions from attack1_right
+	* transitions to attack3_right or idlecomb_right
+	* moves player forward horizontally during the animation (implement in unity)
+
+	[0] -> [1] moves the player forward a small amount
+	[4] -> attack3_right
+	[7] -> idlecomb_right
+
+attack3_right:
+	
+	* transitions from attack2_right
+	* transitions to idlecomb_right
+
+	[7] -> idlecomb_right
+
+LEFT----------------------------
+
+* same transitions as right, but replace right with left 
