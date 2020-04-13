@@ -4,218 +4,135 @@ using UnityEngine;
 
 public class LeechController : MonoBehaviour {
 
-	public Animator animator;
+	public Animator anim;
 
-	private int maxTimeInState;
-	private int stateChangeTimer;
+	public float walking_speed;
+	public float vertical_walking_speed;
 
-	public float walking_speed = 0.07f;
-	public float vertical_walking_speed = 0.06f;
-
-	public float followDistance;
 	public int direction;
+
 	public bool moving;
 
-	public string currentState;
-
-	private GameObject target;
+    public int stateTimer;
 
 	// Use this for initialization
-	void Start()
-	{
-		direction = 0;
+	void Start () {
+		walking_speed = 0.11f;
+		vertical_walking_speed = 0.09f;
+
+        // facing right
+        direction = 0;
 		moving = false;
-        walking_speed = 0.11f;
-        vertical_walking_speed = 0.09f;
-		maxTimeInState = 20;
-        stateChangeTimer = 0;
-		target = null;
-		currentState = "patrol";
-		followDistance = 0.3f;
+
+        stateTimer = 60;
+
 	}
+	
+	// Update is called once per frame
+	void Update () {
 
-	// Update is called once per frame. This is the "main" function.
-	void Update()
-	{
-		if (target == null)
-		{
-			currentState = "patrol";
-			// Decides which patrol state the Leech is in
-			if (stateChangeTimer <= 0)
-			{
-				composeState();
-				stateChangeTimer = maxTimeInState;
-			}
-			else
-			{
-				stateChangeTimer--;
-			}
 
-			// Handles the movement of the Leech
-			handlePatrolMovement();
-		}
+        if (stateTimer <= 0)
+        {
+            // 1
+            // What state are we in
+            // Are we moving? and in which direction?
+            composeState();
+            stateTimer = 60;
+        }
         else
         {
-			currentState = "follow";
-			// Follow the target somehow
-			handleFollowMovement();
+            stateTimer--;
         }
 
+        // 2
+        // Move the dude
+        handleMovement();
 
-		// Handles which animations play as well as animation parameters.
-		handleAnimations();
-
+        // 3
+        // play the appropriate animations
+        handleAnimations();
 	}
 
-
-    public void composeState()
+    void composeState()
     {
-		// Randomly decides if the leech is moving or not
-		int isMoving = Random.Range(0, 15);
-        if (isMoving <= 10)
+
+        int isMoving = Random.Range(0, 2);
+
+        if (isMoving == 0)
         {
-			moving = true;
+            moving = true;
         }
         else
         {
-			moving = false;
+            moving = false;
         }
-
-        // If the leech is moving figure out in which direction
 
         if (moving)
-        {   
-			direction = Random.Range(0, 4);
+        {
+            direction = Random.Range(0, 4);
         }
-
     }
 
-    public void handleFollowMovement()
+    void handleMovement()
     {
-        if (Mathf.Abs(transform.position.x - target.transform.position.x) > followDistance ||
-			Mathf.Abs(transform.position.y - target.transform.position.y) > followDistance)
+        float currentHorizontalSpeed = 0.0f;
+        float currentVerticalSpeed = 0.0f;
+
+        if (moving)
         {
-			moving = true;
-			// Figure out movement direction...
-			int vertical = 1;
-			int horizontal = 1;
-			Vector3 targetLoc = target.transform.position;
-			if (targetLoc.x < transform.position.x)
-			{
-				horizontal = -1;
-			}
-
-			if (targetLoc.y < transform.position.y)
-			{
-				vertical = -1;
-			}
-
-			// Now move the dude
-			// Check which direction the character is facing before moving...
-			Vector3 newPosition = new Vector3(
-				transform.position.x + walking_speed * horizontal,
-				transform.position.y + walking_speed * vertical,
-				transform.position.z
-			);
-			transform.position = newPosition;
-
-
-			// Figure out which direction the dude is supposed to face
-			float verticalDistance = Mathf.Abs(targetLoc.y - transform.position.y);
-			float horizontalDistance = Mathf.Abs(targetLoc.x - transform.position.x);
-
-			if (verticalDistance > horizontalDistance)
-			{
-				// Check if target is below or above
-				if (vertical == 1)
-					direction = 2;
-				else
-					direction = 3;
-			}
-			else
-			{
-				// Check if target is to the right or the left
-				if (horizontal == 1)
-					direction = 0;
-				else
-					direction = 1;
-			}
-		}
-        else
-        {
-			moving = false;
-        }
-    }
-
-	public void handlePatrolMovement()
-	{
-		float horizontal_speed = 0.0f;
-		float vertical_speed = 0.0f;
-
-		if (moving)
-		{
-            switch(direction)
+            switch (direction)
             {
-				case 0:
-					horizontal_speed += walking_speed;
-					break;
-				case 1:
-					horizontal_speed -= walking_speed;
-					break;
-				case 2:
-					vertical_speed += vertical_walking_speed;
-					break;
-				case 3:
-					vertical_speed -= vertical_walking_speed;
-					break;
+                case 0: // Moving Right
+                    currentHorizontalSpeed += walking_speed;
+                    break;
+                case 1: // Moving Left
+                    currentHorizontalSpeed -= walking_speed;
+                    break;
+                case 2: // Moving Up
+                    currentVerticalSpeed += vertical_walking_speed;
+                    break;
+                case 3: // Moving Down
+                    currentVerticalSpeed -= vertical_walking_speed;
+                    break;
+            }
+        }
 
-			}
-		}
-
-		// Check which direction the character is facing before moving...
-		Vector3 newPosition = new Vector3(
-			transform.position.x + horizontal_speed,
-			transform.position.y + vertical_speed,
-			transform.position.z
-		);
-		transform.position = newPosition;
-
-	}
-
-	public void handleAnimations()
-	{
-		animator.SetInteger("direction", direction);
-		animator.SetBool("moving", moving);
-
-		if (moving)
-		{
-			string animState = "walk";
-
-			switch (direction)
-			{
-				case 0:
-					animator.Play(animState + "_right");
-					break;
-				case 1:
-					animator.Play(animState + "_left");
-					break;
-				case 2:
-					animator.Play(animState + "_up");
-					break;
-				case 3:
-					animator.Play(animState + "_down");
-					break;
-			}
-		}
-	}
-
-    public void targetAcquired(GameObject newTarget)
-    {
-		target = newTarget;
+        transform.position = new Vector3(
+            transform.position.x + currentHorizontalSpeed,
+            transform.position.y + currentVerticalSpeed,
+            transform.position.z
+        );
     }
 
-    public void targetLost(GameObject oldTarget)
+    void handleAnimations()
     {
-		target = null;
+        anim.SetBool("moving", moving);
+        anim.SetInteger("direction", direction);
+
+        if (moving)
+        {
+            switch (direction)
+            {
+                case 0: // Moving Right
+                    anim.Play("walk_right");
+                    break;
+                case 1: // Moving Left
+                    anim.Play("walk_left");
+                    break;
+                case 2: // Moving Up
+                    anim.Play("walk_up");
+                    break;
+                case 3: // Moving Down
+                    anim.Play("walk_down");
+                    break;
+            }
+        }
     }
 }
+
+
+
+
+
+
