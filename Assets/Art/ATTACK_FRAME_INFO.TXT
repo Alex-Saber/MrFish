@@ -17,9 +17,9 @@ attack2_right:
 
 	* transitions from attack1_right
 	* transitions to attack3_right or idlecomb_right
-	* moves player forward horizontally during the animation (implement in unity)
+	* move player forward horizontally during the animation (implement in unity?)
 
-	[0] -> [1] moves the player forward a small amount
+	[0] -> [1] move the player forward a small amount
 	[4] -> attack3_right
 	[7] -> idlecomb_right
 
@@ -32,4 +32,34 @@ attack3_right:
 
 LEFT----------------------------
 
-* same transitions as right, but replace right with left 
+* same transition rules as right
+
+
+DOWN----------------------------
+
+attack1_down:
+
+	* transitions from ??
+	* transitions to attack2_down or idlecomb_down
+
+	[5] -> attack2_down
+	[7] -> idlecomb_down
+
+attack2_down:
+
+	* transitions from attack1_down
+	* transitions to attack3_down or idlecomb_down
+	* move the player down during the animation (implement in unity?)
+
+	[0] -> [1] move the player down a small amount
+	[5] -> attack3_down
+	[7] -> idlecomb_down
+
+attack3_down:
+	
+	* transitions from attack2_down
+	* transitions to idlecomb_down
+	* move the player down during the animation (implement in unity?)
+
+	[0] -> [1] move the player down a small amount
+	[7] -> idlecomb_down
