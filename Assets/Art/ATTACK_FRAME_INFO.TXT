@@ -63,3 +63,7 @@ attack3_down:
 
 	[0] -> [1] move the player down a small amount
 	[7] -> idlecomb_down
+
+UP------------------------------
+
+* same transition rules as down
